@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -14,47 +15,78 @@ import java.util.stream.Collectors;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PetResource {
 
-//    private Set<PetType> petTypes = Collections.newSetFromMap(Collections.synchronizedMap(new LinkedHashMap<>()));
     private Set<Pet> pets = Collections.newSetFromMap(Collections.synchronizedMap(new LinkedHashMap<>()));
 
 
     public PetResource() {
-//        petTypes.add(new PetType("Cat"));
-//        petTypes.add(new PetType("Dog"));
-        pets.add(new Pet("Tyga", 3, "cat"));
-        pets.add(new Pet("Bula", 1, "dog"));
-        pets.add(new Pet("Tommy", 2, "dog"));
-        pets.add(new Pet("Suddi", 2, "cat"));
-
+        pets.add(new Pet(1, "Tyga", 3, "cat"));
+        pets.add(new Pet(2, "Bula", 1, "dog"));
+        pets.add(new Pet(3, "Tommy", 2, "dog"));
+        pets.add(new Pet(4, "Suddi", 2, "cat"));
     }
 
     @GET
-    public Set<Pet> list() {
-        return pets;
+    public Response list() {
+
+        if (pets.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(pets).build();
     }
 
     @GET
     @Path("/{name}")
-    public Set<Pet> getOne(@PathParam String name) {
-        return pets.stream().filter(pet -> pet.getName().equals(name)).collect(Collectors.toSet());
+    public Response getOne(@PathParam String name) {
+
+        Set<Pet> responseSet = pets.stream().filter(pet -> pet.getName().equals(name)).collect(Collectors.toSet());
+        if (responseSet.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(responseSet).build();
     }
 
     @GET
     @Path("/findByType/{petType}")
-    public Set<Pet> getByType(@PathParam String petType) {
-        return pets.stream().filter(pet -> pet.getPetType().equals(petType.toLowerCase())).collect(Collectors.toSet());
+    public Response getByType(@PathParam String petType) {
+
+        Set<Pet> responseSet = pets.stream().filter(pet -> pet.getPetType().equals(petType.toLowerCase())).collect(Collectors.toSet());
+        if (responseSet.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(responseSet).build();
     }
 
     @POST
-    public Set<Pet> add(Pet pet) {
+    public Response add(Pet pet) {
+
         pets.add(pet);
-        return pets;
+        return Response.ok(pets).build();
     }
 
     @DELETE
-    public  Set<Pet> delete(Pet pet) {
-        pets.removeIf(petItem -> petItem.getName().contentEquals(pet.getName()));
-        return pets;
+    @Path("/delete/{petID}")
+    public Response delete(@PathParam("petID") Integer petID) {
+
+        if (pets.isEmpty() || petID < 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        pets.removeIf(petItem -> petItem.getPetID().equals(petID));
+        return Response.ok(pets).build();
+    }
+
+    @PUT
+    @Path("/update/{petID}/{petName}")
+    public Response updatePetName(@PathParam("petID") Integer petID, @PathParam("petName") String petName) {
+        if (petID < 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        pets.forEach(pet -> {
+            if (pet.getPetID() == petID) {
+                pet.setName(petName);
+            }
+        });
+        return Response.ok(pets).build();
     }
 
 }

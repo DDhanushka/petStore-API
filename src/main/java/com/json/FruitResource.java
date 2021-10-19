@@ -6,6 +6,7 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,16 +25,29 @@ public class FruitResource {
         fruits.add(new Fruit("Pineapple", "Tropical fruite"));
     }
 
+//    @GET
+//    public Set<Fruit> list() {
+//        return fruits;
+//    }
+
     @GET
-    public Set<Fruit> list() {
-        return fruits;
+    public Response list() {
+        if (fruits.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(fruits).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/find/{name}")
-    public Set<Fruit> getOne(@PathParam String name) {
-        return fruits.stream().filter(item -> item.name.equals(name)).collect(Collectors.toSet());
+    public Response getOne(@PathParam String name) {
+
+        Set<Fruit> responseSet = fruits.stream().filter(item -> item.name.toLowerCase().equals(name.toLowerCase())).collect(Collectors.toSet());
+        if (responseSet.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(responseSet).build();
     }
 
     @POST
@@ -43,7 +57,7 @@ public class FruitResource {
     }
 
     @DELETE
-    public  Set<Fruit> delete(Fruit fruit) {
+    public Set<Fruit> delete(Fruit fruit) {
         fruits.removeIf(existingFruit -> existingFruit.name.contentEquals(fruit.name));
         return fruits;
     }
@@ -53,5 +67,6 @@ public class FruitResource {
         fruits.removeIf(existingFruit -> existingFruit.name.contentEquals(xname));
         fruits.add(new Fruit(fruit.name, fruit.description));
         return fruits;
+
     }
 }

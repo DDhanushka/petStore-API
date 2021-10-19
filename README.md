@@ -61,3 +61,35 @@ If you want to learn more about building native executables, please consult http
 Easily start your RESTful Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+
+# Run CURL/ WGET
+
+## CURL
+
+### Installing curl
+The curl command is installed by default in Linux distributions.
+
+How do you check if you already have curl installed?
+
+1. Open your Linux console
+
+2. Type ‘curl’, and press ‘enter’.
+
+3. If you already have curl installed, you will see the following message:
+
+```aidl
+Curl:try
+'Curl --help'
+Or 'curl --manual'
+```
+ 4. Run
+```
+curl http://localhost:8080/pets
+```
+
+## WGET
+
+- Most (if not all) Linux distros come with wget by default. So Linux users don’t have to do anything!
+- macOS systems do not come with wget, but you can install command line tools using Homebrew. Once you’ve set up Homebrew, just run brew install wget in the Terminal.
+- Windows users don’t have easy access to wget in the traditional Command Prompt, though Cygwin provides wget and other GNU utilities, and Windows 10’s Ubuntu’s Bash shell also comes with wget.
+

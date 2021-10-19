@@ -1,6 +1,8 @@
 package org;
 
+import com.json.Pet;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -14,7 +16,15 @@ public class PetResourceTest {
         given()
                 .when().get("/pets")
                 .then()
-                .statusCode(200)
-                .body(is("pets"));
+                .statusCode(200);
     }
+
+    @Test
+    public void testGetOnePet() {
+        given()
+                .contentType(ContentType.JSON).param("Tyga")
+                .when().get("/pets")
+                .then().statusCode(200);
+    }
+
 }
